@@ -1,0 +1,92 @@
+#Import the data: 
+qiime tools import --type 'SampleData[PairedEndSequencesWithQuality]' --input-path Manifest_BRDC_INDV.tsv --output-path INDV_BRDC_paired-end-demux.qza --input-format PairedEndFastqManifestPhred33V2
+
+#Validate the files:
+qiime tools validate INDV_BRDC_paired-end-demux.qza
+
+#Trimming primers - Cutadapt:
+qiime cutadapt trim-paired --i-demultiplexed-sequences INDV_BRDC_paired-end-demux.qza  --p-front-f GTATTACCGCGGCTGCTG --p-front-r AGAGTTTGATCCTGGCTCAG --p-match-adapter-wildcards --p-match-read-wildcards --p-discard-untrimmed --o-trimmed-sequences INDV_paired-end-demux-trimmed.qza --verbose
+
+qiime demux summarize --i-data INDV_paired-end-demux-trimmed.qza --o-visualization INDV_paired-end-demux-trimmed.qzv
+
+#Merge and filter – Dada2: 
+qiime dada2 denoise-paired --i-demultiplexed-seqs INDV_paired-end-demux-trimmed.qza --p-trunc-len-f 280 --p-trunc-len-r 235 --o-table INDV_table.qza --o-representative-sequences INDV_rep-seqs.qza --o-denoising-stats INDV_denoising-stats.qza
+
+#View feature and data table summaries:
+qiime feature-table summarize --i-table INDV_table.qza --o-visualization INDV_table.qzv --m-sample-metadata-file Metadata_INDV.tsv
+qiime feature-table tabulate-seqs --i-data INDV_rep-seqs.qza --o-visualization INDV_rep-seqs.qzv
+qiime metadata tabulate --m-input-file INDV_denoising-stats.qza --o-visualization INDV_denoising-stats.qzv
+
+
+#Filter features not present in at least 3 samples or abunce below 5 (note: after filtering fetures not present in at least 3 samples, there were no features with abunance less than 5 remaining):
+qiime feature-table filter-features --i-table INDV_table.qza --p-min-samples 3 --o-filtered-table sample-filtered-INDV-table.qza
+qiime feature-table summarize --i-table sample-filtered-INDV-table.qza --o-visualization sample-filtered-INDV-table.qzv --m-sample-metadata-file Metadata_INDV.tsv
+qiime feature-table filter-samples --i-table sample-filtered-INDV-table.qza --p-min-features 5 --o-filtered-table filtered-INDV-table.qza
+qiime feature-table summarize --i-table filtered-INDV-table.qza --o-visualization filtered-INDV-table.qzv --m-sample-metadata-file Metadata_INDV.tsv
+
+qiime feature-table filter-seqs --i-data INDV_rep-seqs.qza --i-table filtered-INDV-table.qza --o-filtered-data filtered_INDV-seqs.qza
+qiime feature-table tabulate-seqs --i-data filtered_INDV-seqs.qza --o-visualization filtered-INDV-seqs.qzv
+qiime metadata tabulate --m-input-file INDV_taxonomy.qza --o-visualization INDV_taxonomy.qzv
+
+#Generate Phylogeneetic tree and visual: 
+qiime phylogeny align-to-tree-mafft-fasttree --i-sequences filtered_INDV-seqs.qza --o-alignment INDV_aligned-rep-seqs.qza --o-masked-alignment masked-aligned-rep-seqs_INDV.qza --o-tree unrooted-tree_INDV.qza --o-rooted-tree rooted-tree_INDV.qza
+qiime empress community-plot --i-tree rooted-tree_INDV.qza --i-feature-table filtered-INDV-table.qza --m-sample-metadata-file Metadata_INDV.tsv --m-feature-metadata-file INDV_taxonomy.qza --o-visualization empress-tree.qzv
+
+#Diversity analysis:
+qiime diversity core-metrics-phylogenetic --i-phylogeny rooted-tree_INDV.qza --i-table filtered-INDV-table.qza --p-sampling-depth 54000 --m-metadata-file Metadata_INDV.tsv --output-dir core-metrics-results-INDV
+
+#Alpha Diversity tables and figures for Faith, Shannon, and evenness: 
+qiime diversity alpha-group-significance --i-alpha-diversity core-metrics-results-INDV/faith_pd_vector.qza --m-metadata-file Metadata_INDV.tsv --o-visualization core-metrics-results-INDV/faith-pd-group-significance.qzv
+qiime diversity alpha-group-significance --i-alpha-diversity core-metrics-results-INDV/shannon_vector.qza --m-metadata-file Metadata_INDV.tsv --o-visualization core-metrics-results-INDV/shannon-group-significance.qzv
+qiime diversity alpha-group-significance --i-alpha-diversity core-metrics-results-INDV/evenness_vector.qza --m-metadata-file Metadata_INDV.tsv --o-visualization core-metrics-results-INDV/evenness-group-significance.qzv
+
+Beta diversity tables and figures for various moedels of Unweighted unifrac and bray curtis:
+qiime diversity beta-group-significance --i-distance-matrix core-metrics-results-INDV/unweighted_unifrac_distance_matrix.qza --m-metadata-file Metadata_INDV.tsv --m-metadata-column Treatment --o-visualization core-metrics-results-INDV/unweighted-unifrac-Treatment-significance.qzv --p-pairwise
+
+qiime diversity beta-group-significance --i-distance-matrix core-metrics-results-INDV/unweighted_unifrac_distance_matrix.qza --m-metadata-file Metadata_INDV.tsv --m-metadata-column Timepoint --o-visualization core-metrics-results-INDV/unweighted-unifrac-Timepoint-significance.qzv --p-pairwise
+
+
+qiime diversity beta-group-significance --i-distance-matrix BRDC-core-metrics-results-INDV-combo/Bray_curtis_distance_matrix.qza --m-metadata-file Metadata_INDV_combo.tsv --m-metadata-column TRTxTimexTemp --o-visualization BRDC-core-metrics-results-INDV-combo/bray-curtis-TRTxTimexTemp-significance.qzv --p-pairwise
+
+qiime diversity beta-group-significance --i-distance-matrix core-metrics-results-INDV/unweighted_unifrac_distance_matrix.qza --m-metadata-file Metadata_INDV.tsv --m-metadata-column Timepoint --o-visualization core-metrics-results-INDV/unweighted-unifrac-Timepoint-significance.qzv --p-pairwise
+
+#Alpha Rarafication 
+qiime diversity alpha-rarefaction \
+  --i-table table.qza \
+  --i-phylogeny rooted-tree.qza \
+  --p-max-depth 44350 \
+  --m-metadata-file sample-metadata.tsv \
+  --o-visualization alpha-rarefaction.qzv
+
+#Taxonimic Classification 
+
+#Create classifier file
+qiime rescript get-gtdb-data \
+    --p-version '214.1' \
+    --p-db-type 'SpeciesReps' \
+    --p-domain 'Both' \
+    --o-gtdb-taxonomy gtdb-214-both-tax.qza \
+    --o-gtdb-sequences gtdb-214-both-seqs.qza \
+    --verbose
+    
+qiime feature-classifier fit-classifier-naive-bayes \
+    --i-reference-reads gtdb-214-both-seqs.qza \
+    --i-reference-taxonomy gtdb-214-both-tax.qza \
+    --o-classifier gtdb-214-both-classifier.qza
+
+
+#Assign Taxonomy using classifer and plot 
+qiime feature-classifier classify-sklearn --i-classifier gtdb-214-both-classifier.qza --i-reads filtered_INDV-seqs.qza --o-classification INDV_taxonomy.qza
+qiime metadata tabulate --m-input-file INDV_taxonomy.qza --o-visualization INDV_taxonomy.qzv
+qiime taxa barplot --i-table filtered-E23-table.qza --i-taxonomy E23_taxonomy.qza --m-metadata-file Metadata_E23.tsv --o-visualization E23_taxa-bar-plots.qzv
+
+
+# Differential Abundance 
+
+qiime composition ancombc --i-table INDV-table.qza --m-metadata-file Metadata_INDV.tsv --p-formula 'FEC' --o-differentials INDV-Treatment.qza
+qiime composition da-barplot --i-data INDV-Treatment.qza --p-significance-threshold 0.01 --p-level-delimiter ';' --o-visualization da-INDV-FEC.qzv
+
+qiime composition ancombc --i-table BRDC-table.qza --m-metadata-file Metadata_INDV.tsv --p-formula 'Timepoint' --o-differentials BRDC-Timepoint.qza
+qiime composition da-barplot --i-data BRDC-Timepoint.qza --p-significance-threshold 0.001 --p-level-delimiter ';' --o-visualization BRDC-Timepoint.qzv
+
+    
