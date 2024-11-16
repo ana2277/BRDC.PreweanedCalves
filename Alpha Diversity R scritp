@@ -1,0 +1,180 @@
+# Load necessary packages
+library(lme4)
+library(vegan)
+library(readr)
+library(pubr)
+library(ggplot2)
+library(broom.mixed)
+library(kableExtra)
+library(adonis2)
+
+
+
+# Load your data (replace 'your_data.csv' with the actual data file)
+# Ensure your data has columns: 'Shannon', 'Observed', 'Treatment', 'Timepoint', 'AnimalID'
+shannondata <- read_tsv('Shannon-diversity.tsv')
+metadata <- read_tsv("Metadata_INDV.tsv")
+
+
+# Check the structure of your data
+head(shannondata)
+
+# Assume the data has columns: 'SampleID' and 'shannon_entropy'
+# If the column names are different, adjust them accordingly
+shannondata <- shannondata %>%
+  rename(SampleID = ...1, ShannonEntropy = shannon_entropy)
+
+# Merge the Shannon data with metadata
+shannondata <- shannondata %>%
+  inner_join(metadata, by = "SampleID")%>%
+  mutate(
+    AnimalID = as.character(AnimalID),
+    Timepoint = as.character(Timepoint),
+    Treatment = as.character(Treatment))
+
+# Preview the merged data
+head(shannondata)
+
+
+# Linear Mixed Model for Shannon Diversity
+# Fixed effects: Treatment, Timepoint, Treatment:Timepoint interaction
+# Random effect: AnimalID to account for individual variation
+
+shannon_model <- lmer(ShannonEntropy ~ Treatment * Timepoint + (1|AnimalID), data = shannondata)
+
+# Summary of the model
+shannon_summary <- summary(shannon_model)
+
+# Extract coefficients for the fixed effects
+shannon_coef_table <- as.data.frame(shannon_summary$coefficients)
+
+# Apply multiple testing correction on p-values
+p_values <- shannon_coef_table$`Pr(>|t|)`
+p_values_corrected <- p.adjust(p_values, method = "fdr")
+
+# Create a cleaned results table
+shannon_cleaned <- data.frame(
+  Term = rownames(shannon_coef_table),
+  Estimate = coef_table$Estimate,
+  StdError = coef_table$`Std. Error`,
+  t_value = coef_table$`t value`,
+  p_value = p_values,
+  p_value_corrected = p_values_corrected
+)
+
+# Filter to include only relevant terms for presentation
+# Rename terms for clarity and presentation
+shannon_cleaned <- shannon_table %>%
+  mutate(Term = recode(Term,
+                       "TreatmentMT 2" = "Outbreak Group",
+                       "TimepointPreconditioning" = "Timepoint",
+                       "TreatmentMT 2:TimepointPreconditioning" = "Group:Timepoint"))
+
+# Reorder rows for better readability
+shannon_cleaned <- shannon_cleaned %>%
+  arrange(match(Term, c("Treatment", "Timepoint", "Treatment:Timepoint Interaction")))
+
+#filter out NA cells
+shannon_table <- shannon_table %>%
+  filter(rowSums(is.na(select(., -Term))) < ncol(.) - 1)
+
+# Round the numeric columns for better presentation
+shannon_cleaned <- shannon_cleaned %>%
+  mutate(across(where(is.numeric), round, 3))
+
+# Reorder rows for better readability
+shannon_cleaned <- shannon_cleaned %>%
+  arrange(match(Term, c("Outbreak Group", "Timepoint", "Group:Timepoint")))
+
+# Create a nicely formatted table using kableExtra
+Shannon_Table <-shannon_cleaned %>%
+  mutate(P_value = as.character(P_value)) %>%
+  kbl(caption = "Shannon Diversity Mixed Model Results") %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  add_header_above(c(" " = 2, "Model Estimates" = 5)) # Custom header for clarity
+
+Shannon_Table
+
+ggsave("Shannon_table.png", plot = Shannon_Table, width = 1250, height = 750, dpi = "retina", units = "px", scale = 3.2)
+
+
+
+
+
+
+
+#OBSERVED ALPHA DIVERSITY
+
+observeddata <- read_tsv('Observed-Alpha.tsv')
+metadata <- read_tsv("Metadata_INDV.tsv")
+
+
+# Check the structure of your data
+head(observeddata)
+
+# Assume the data has columns: 'SampleID' and 'shannon_entropy'
+# If the column names are different, adjust them accordingly
+observeddata <- observeddata %>%
+  rename(SampleID = ...1)
+
+# Merge the Shannon data with metadata
+observeddata <- observeddata %>%
+  inner_join(metadata, by = "SampleID")%>%
+  mutate(
+    AnimalID = as.character(AnimalID),
+    Timepoint = as.character(Timepoint),
+    Treatment = as.character(Treatment))
+
+# Preview the merged data
+head(observeddata)
+
+
+
+
+ # Step 3: Create a basic boxplot of Shannon Diversity
+plot_BRDCshannon<- ggplot(shannondata, aes(x = Treatment, y = ShannonEntropy, fill = Treatment)) +
+  geom_boxplot(outlier.shape = 21, width = 0.6) +
+  labs(y = "Shannon Diversity")+
+  scale_fill_manual(values = c("royalblue", "yellow2")) + 
+  theme_linedraw()+
+  theme(legend.position = "none",
+        strip.text = element_text(size = 14, color = "black"),
+        strip.background = element_rect(fill = "gray90"),
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14, vjust = 1, color = "black"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank()
+        ) +
+  facet_grid(~Timepoint)
+plot_BRDCshannon
+
+
+plot_BRDCobserved<- ggplot(observeddata, aes(x = Treatment, y = observed_features, fill = Treatment)) +
+  geom_boxplot(outlier.shape = 21, width = 0.6) +
+  labs(y = "Observed Features")+
+  scale_fill_manual(values = c("royalblue", "yellow2")) + 
+  theme_linedraw()+
+  theme(legend.position = "none",
+        strip.text = element_text(size = 14, color = "black"),
+        strip.background = element_blank(), 
+        strip.placement = "outside",
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14, vjust = 1, color = "black"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        panel.border = element_blank(), # Border around plot area
+        panel.spacing = unit(1, "lines")
+  ) +
+  facet_grid(~Timepoint)
+plot_BRDCobserved
+
+combined_plot_Alpha_BRDC <- ggarrange(plot_BRDCshannon, plot_BRDCobserved,
+                                labels = c("A", "B"),
+                                ncol = 2, nrow = 1)
+combined_plot_Alpha_BRDC
+
+ggsave("AlphaDiversity_shannon_observed.png", plot = combined_plot_Alpha_BRDC, width = 1250, height = 750, dpi = "retina", units = "px", scale = 3.2)
