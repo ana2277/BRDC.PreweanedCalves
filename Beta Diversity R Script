@@ -1,0 +1,200 @@
+# Load necessary libraries
+library(vegan)
+library(readr)
+library(ggplot2)
+library(broom.mixed)
+library(kableExtra)
+library(adonis2)
+
+# CREATE THE PCoA PLOT FOR BRAY CURTIS DISTANCE
+
+# Load the Bray-Curtis distance matrix and metadata
+Bray_curits_BRDC <- as.matrix(read.csv("Bray-curits-distance-matrix.csv", row.names = 1))
+head(bray_curtis_BRDC)
+bray_curtis_BRDC[1]<-NULL
+BC_BRDC<-as.dist(bray_curtis_BRDC)
+
+Metadata_INDV <- read_tsv("Metadata_INDV.tsv")
+
+
+# Perform PCoA
+pcoa_result <- cmdscale(BC_BRDC, k = 2, eig = TRUE)
+
+# Extract the coordinates
+pcoa_coordinates <- as.data.frame(pcoa_result$points)
+colnames(pcoa_coordinates) <- c("PC1", "PC2")
+pcoa_coordinates$SampleID <- rownames(pcoa_coordinates)
+
+
+# Merge PCoA results with metadata
+pcoa_data <- pcoa_coordinates %>%
+  inner_join(Metadata_INDV, by = "SampleID")%>%
+  mutate(
+    Treatment = as.character(Treatment),
+    Timepoint = as.character(Timepoint),
+    AnimalID = as.character(AnimalID))
+
+
+# Create PCoA plot with additional shape mapping
+pcoa_plot <- ggplot(pcoa_data, aes(x = PC1, y = PC2, color = Treatment, shape = Timepoint)) +  # Replace 'Group' and 'Subgroup' with actual metadata column names
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() +
+  labs(title = "PCoA Plot of Bray-Curtis Distance",
+       x = paste0("PC1 (", round(pcoa_result$eig[1] / sum(pcoa_result$eig) * 100, 1), "%)"),
+       y = paste0("PC2 (", round(pcoa_result$eig[2] / sum(pcoa_result$eig) * 100, 1), "%)"),
+       color = "Outbreak Group",  # Replace 'Group' with the actual metadata column name
+       shape = "Time point") +  # Replace 'Subgroup' with the actual metadata column name
+  theme(
+    legend.position = "right",
+    axis.line = element_line(color= "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    legend.text = element_text(size = 13),
+    plot.margin = unit(c(1, 1, 1, 2), "cm")
+  )
+
+# Display the plot
+print(pcoa_plot)
+
+ggsave("PCoA_BrayCurtisc.png", plot = pcoa_plot, width = 1250, height = 750, dpi = "retina", units = "px", scale = 3.2)
+
+
+
+
+# Import the weighted unifrac matrix
+unweighted_unifrac_distances <- read_tsv("Unweighted-distance-matrix.tsv", col_names = TRUE)
+unweighted_unifrac_distances[1]<-NULL
+unweighted_unifrac<-as.dist(unweighted_unifrac_distances)
+head(unweighted_unifrac)
+
+
+# Perform PCoA
+pcoa_result2 <- cmdscale(unweighted_unifrac, k = 2, eig = TRUE)
+
+# Extract the coordinates
+pcoa_coordinates2 <- as.data.frame(pcoa_result2$points)
+colnames(pcoa_coordinates2) <- c("PC1", "PC2")
+pcoa_coordinates2$SampleID <- rownames(pcoa_coordinates2)
+
+
+# Merge PCoA results with metadata
+pcoa_data2 <- pcoa_coordinates2 %>%
+  inner_join(Metadata_INDV, by = "SampleID")%>%
+  mutate(
+    Treatment = as.character(Treatment),
+    Timepoint = as.character(Timepoint),
+    AnimalID = as.character(AnimalID))
+
+
+# Create PCoA plot with additional shape mapping
+pcoa_plot_UnWunfrac <- ggplot(pcoa_data2, aes(x = PC1, y = PC2, color = Treatment, shape = Timepoint)) +  # Replace 'Group' and 'Subgroup' with actual metadata column names
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() +
+  labs(title = "PCoA Plot of Unweighted Unifrac Distance",
+       x = paste0("PC1 (", round(pcoa_result2$eig[1] / sum(pcoa_result2$eig) * 100, 1), "%)"),
+       y = paste0("PC2 (", round(pcoa_result2$eig[2] / sum(pcoa_result2$eig) * 100, 1), "%)"),
+       color = "Outbreak Group",  # Replace 'Group' with the actual metadata column name
+       shape = "Time point") +  # Replace 'Subgroup' with the actual metadata column name
+  theme(
+    legend.position = "right",
+    axis.line = element_line(color= "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    legend.text = element_text(size = 13),
+    plot.margin = unit(c(1, 1, 1, 2), "cm")
+  )
+
+# Display the plot
+print(pcoa_plot_UnWunfrac)
+
+
+ggsave("PCoA_UnweightedUnifrac.png", plot = pcoa_plot_Wunfrac, width = 1250, height = 750, dpi = "retina", units = "px", scale = 3.2)
+
+#combine the plots 
+combined_PCoA <- ggarrange( pcoa_plot,pcoa_plot_UnWunfrac,
+                            labels = c("A", "B"),
+                            ncol = 2, 
+                            nrow = 1,
+                            common.legend = TRUE,
+                            legend = "right")
+combined_PCoA
+
+ggsave("PCoA_Combined.png", plot = combined_PCoA, width = 1250, height = 750, dpi = "retina", units = "px", scale = 3.2)
+
+
+#PERMANOVA ANALYSIS USEING BRAY CURTIS DISTANC
+
+Load distance matrix and meta data
+bray_curtis_matrix <- as.matrix(read.csv("Bray-curits-distance-matrix.csv", row.names = 1))
+metadata <- Metadata_INDV
+
+# Make sure Treatment, Timepoint, and animalID are factors
+metadata$Treatment <- as.factor(metadata$Treatment)
+metadata$Timepoint <- as.factor(metadata$Timepoint)
+metadata$AnimalID <- as.factor(metadata$AnimalID)
+
+# Verify that sample IDs in the distance matrix match those in the metadata
+# Subset metadata to match samples in the distance matrix
+metadata <- metadata %>%
+  filter(sampleid %in% rownames(bray_curtis_matrix))
+
+# Reorder the distance matrix and metadata
+bray_curtis_matrix <- bray_curtis_matrix[metadata$sampleid, metadata$sampleid]
+
+# Run PERMANOVA with adonis2
+adonis2_results <- adonis2(
+  bray_curtis_matrix ~ Treatment * Timepoint + AnimalID,
+  data = metadata,
+  permutations = 999,
+  method = "bray"
+)
+
+# Display the results
+print(adonis2_results)
+
+#Save results to a file 
+write.csv(as.data.frame(adonis2_results), "path/to/save/adonis2_results.csv", row.names = TRUE)
+
+# Convert results to a data frame and prepare for publication
+# Extract the relevant columns from adonis2 results
+results_df <- as.data.frame(adonis2_results)
+results_df <- results_df %>%
+  rownames_to_column(var = "Term") %>%
+  select(Term, SumOfSqs, Df, R2, F, `Pr(>F)`) %>%
+  rename(
+    "Sum of Squares" = SumOfSqs,
+    "Degrees of Freedom" = Df,
+    "R²" = R2,
+    "F-value" = F,
+    "P-value" = `Pr(>F)`
+  )
+
+#Change the term name
+results_df <- results_df %>%
+  mutate(Term = recode(Term,
+                       "Treatment" = "Outbreak Group", 
+                       "Treatment:Timepoint" = "Group:Timepoint"))
+
+# Round numerical values for readability
+results_df <- results_df %>%
+  mutate(
+    `Sum of Squares` = round(`Sum of Squares`, 2),
+    `R²` = round(`R²`, 3),
+    `F-value` = round(`F-value`, 2),
+    `P-value` = ifelse(`P-value` < 0.001, "< 0.001", round(`P-value`, 3))
+  )
+
+#filter out NA cells
+results_df <- results_df %>% mutate(across(everything(), ~ ifelse(is.na(.), "", .)))
+
+# Create formatted table using kableExtra
+BrayCurtis_Table <-results_df %>%
+  kbl(caption = "Beta Diversity Bray Curtis Adonis2 Results") %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  add_header_above(c(" " = 2, "Model Estimates" = 4)) # Custom header for clarity
+
+BrayCurtis_Table
+
+
