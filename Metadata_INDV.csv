@@ -1,0 +1,111 @@
+sampleid,Librarynumber,AnimalID,Timepoint,Treatment,TimepointxTrt,Temp
+LIB120152,120152,20162340,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121611,121611,20162340,Preconditioning,MT 2,Preconditioning 2,High
+LIB121612,121612,20162365,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB120154,120154,20162370,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121617,121617,20162370,Preconditioning,MT 2,Preconditioning 2,Low
+LIB121616,121616,20162388,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB120145,120145,20162388,Preconditioning,MT 2,Preconditioning 2,High
+LIB120156,120156,20162399,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121602,121602,20162399,Preconditioning,MT 1,Preconditioning 1,High
+LIB120157,120157,20162428,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121633,121633,20162428,Preconditioning,MT 2,Preconditioning 2,High
+LIB121610,121610,20162445,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121601,121601,20162445,Preconditioning,MT 2,Preconditioning 2,Low
+LIB121630,121630,20162470,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB121629,121629,20162470,Preconditioning,MT 1,Preconditioning 1,Low
+LIB121607,121607,20162521,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB121628,121628,20162521,Preconditioning,MT 1,Preconditioning 1,Low
+LIB121618,121618,20162535,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121604,121604,20162535,Preconditioning,MT 2,Preconditioning 2,Low
+LIB121619,121619,20162538,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121632,121632,20162538,Preconditioning,MT 2,Preconditioning 2,High
+LIB120136,120136,20162549,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121614,121614,20162549,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120140,120140,20162561,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121608,121608,20162561,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120141,120141,20162562,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121620,121620,20162562,Preconditioning,MT 2,Preconditioning 2,Low
+LIB121621,121621,20162594,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB120150,120150,20162594,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120142,120142,20162603,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121622,121622,20162603,Preconditioning,MT 2,Preconditioning 2,High
+LIB121623,121623,20162619,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121631,121631,20162619,Preconditioning,MT 2,Preconditioning 2,Low
+LIB121606,121606,20162631,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121603,121603,20162631,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120170,120170,20162633,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121613,121613,20162633,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120171,120171,20162636,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121430,121430,20162636,Preconditioning,MT 2,Preconditioning 2,High
+LIB121423,121423,20162642,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121431,121431,20162642,Preconditioning,MT 1,Preconditioning 1,High
+LIB121609,121609,20162645,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121432,121432,20162645,Preconditioning,MT 2,Preconditioning 2,High
+LIB121425,121425,20162650,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121433,121433,20162650,Preconditioning,MT 2,Preconditioning 2,High
+LIB121426,121426,20162664,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB121434,121434,20162664,Preconditioning,MT 1,Preconditioning 1,Low
+LIB121427,121427,20162676,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121435,121435,20162676,Preconditioning,MT 2,Preconditioning 2,High
+LIB120177,120177,20162680,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121625,121625,20162680,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120178,120178,20162697,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121437,121437,20162697,Preconditioning,MT 1,Preconditioning 1,High
+LIB121439,121439,20162698,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB120189,120189,20162702,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB121438,121438,20162702,Preconditioning,MT 2,Preconditioning 2,High
+LIB121441,121441,20162704,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121448,121448,20162704,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120191,120191,20162715,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB120198,120198,20162715,Preconditioning,MT 2,Preconditioning 2,High
+LIB121443,121443,20162721,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121450,121450,20162721,Preconditioning,MT 1,Preconditioning 1,High
+LIB121444,121444,20162726,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121451,121451,20162726,Preconditioning,MT 1,Preconditioning 1,High
+LIB121445,121445,20162727,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB121452,121452,20162727,Preconditioning,MT 1,Preconditioning 1,Low
+LIB120195,120195,20162729,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB121453,121453,20162729,Preconditioning,MT 1,Preconditioning 1,Low
+LIB121447,121447,20162731,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121454,121454,20162731,Preconditioning,MT 1,Preconditioning 1,High
+LIB121421,121421,20162733,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121455,121455,20162733,Preconditioning,MT 1,Preconditioning 1,High
+LIB121422,121422,20162736,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB121456,121456,20162736,Preconditioning,MT 1,Preconditioning 1,High
+LIB120172,120172,20162743,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120179,120179,20162743,Preconditioning,MT 1,Preconditioning 1,Low
+LIB121424,121424,20162746,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120180,120180,20162746,Preconditioning,MT 1,Preconditioning 1,Low
+LIB120174,120174,20162747,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120181,120181,20162747,Preconditioning,MT 1,Preconditioning 1,Low
+LIB120175,120175,20162772,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB120182,120182,20162772,Preconditioning,MT 2,Preconditioning 2,Low
+LIB120176,120176,20162778,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120183,120183,20162778,Preconditioning,MT 1,Preconditioning 1,Low
+LIB121428,121428,20162787,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB120184,120184,20162787,Preconditioning,MT 2,Preconditioning 2,High
+LIB121429,121429,20162795,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120185,120185,20162795,Preconditioning,MT 1,Preconditioning 1,Low
+LIB120188,120188,20162797,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB120186,120186,20162797,Preconditioning,MT 2,Preconditioning 2,High
+LIB121440,121440,20162798,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB120187,120187,20162798,Preconditioning,MT 1,Preconditioning 1,High
+LIB120190,120190,20162804,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB120199,120199,20162804,Preconditioning,MT 1,Preconditioning 1,High
+LIB121442,121442,20162808,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB120200,120200,20162808,Preconditioning,MT 1,Preconditioning 1,High
+LIB120192,120192,20162825,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB120201,120201,20162825,Preconditioning,MT 1,Preconditioning 1,High
+LIB120193,120193,20162826,Mass Treatment,MT 1,Mass Treatment 1,High
+LIB120202,120202,20162826,Preconditioning,MT 1,Preconditioning 1,High
+LIB120194,120194,20162829,Mass Treatment,MT 2,Mass Treatment 2,High
+LIB120203,120203,20162829,Preconditioning,MT 2,Preconditioning 2,High
+LIB121446,121446,20162830,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120204,120204,20162830,Preconditioning,MT 1,Preconditioning 1,Low
+LIB120196,120196,20162831,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB120205,120205,20162831,Preconditioning,MT 1,Preconditioning 1,Low
+LIB120197,120197,20162836,Mass Treatment,MT 2,Mass Treatment 2,Low
+LIB121626,121626,20162836,Preconditioning,MT 2,Preconditioning 2,Low
+LIB121449,121449,20162839,Mass Treatment,MT 1,Mass Treatment 1,Low
+LIB121627,121627,20162839,Preconditioning,MT 1,Preconditioning 1,Low
