@@ -1,0 +1,145 @@
+Load necessary packages 
+library(phyloseq)
+library(qiime2R)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+#Load QIMME2 data files and metadata
+BRDC_INDV<-qza_to_phyloseq(
+  features="filtered-INDV-table.qza",
+  tree="rooted-tree_INDV.qza",
+  "INDV_taxonomy.qza",
+  metadata = "Metadata_INDV.tsv"
+)
+
+
+tax_table(BRDC_INDV) <- tax_table(BRDC_INDV) %>%
+  as.data.frame() %>%
+  mutate(Genus = ifelse(Genus == "" | is.na(Genus), paste("unknown", row_number()), Genus)) %>%
+  as.matrix()
+
+genus_abund_indv <- BRDC_INDV %>%
+  tax_glom(taxrank = "Genus") %>%                        # Set to smallest taxonomic level you are interested in
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%   # Transform to rel. abundance
+  psmelt()                                               # Melt to long format
+head(genus_abund_indv)
+
+brdc_indv_G <- genus_abund_indv %>%
+  select(Phylum, Class, Family, Genus, SampleID, Abundance, animalID, Timepoint, Treatment) %>%
+  filter(Abundance != 0) %>%
+   mutate(
+    Tag = as.character(Treatment),
+    Day = as.character(Timepoint))
+head(brdc_indv_G)
+
+#Calculate total abundace for each phylum and transform to relative abundance
+phylum_BRDC_INDV <- brdc_indv_G %>%
+  select(Treatment, Timepoint, animalID, Phylum, Abundance) %>%  
+  group_by(Treatment, Timepoint) %>%                   
+  mutate(totalSum = sum(Abundance)) %>%                               
+  ungroup() %>%                                                  
+  group_by(Treatment, Timepoint, Phylum) %>%          
+  summarise(                                                            
+    Abundance = sum(Abundance),                                        
+    totalSum,
+    RelAb = Abundance/totalSum) %>%                          
+  unique()
+
+head(phylum_BRDC_INDV)
+
+#view number of phyla 
+length(unique(phylum_BRDC_INDV$Phylum))
+
+#Create Color palete for abundace graph. 
+phylum_colors <- c(
+  "orchid1", "forestgreen", "grey22", "darkcyan",  "orange", "purple4","dodgerblue", "tomato2", 
+  "blue", "grey47", "cyan", "coral3",  "palegoldenrod", "firebrick", "yellow", "lightblue",  
+  "mediumpurple1", "tan4", "red", "mediumseagreen", "darkblue")
+length(phylum_colors)
+
+#Create Abundance Graph for Phylum Level
+
+BRDC_Abundplot_phylum<-ggplot(phylum_BRDC_INDV)+
+  geom_col(mapping = aes(x = Treatment, y = RelAb, fill = Phylum), position = "stack", show.legend = TRUE)+
+  facet_grid(cols = vars(Timepoint))+
+  ylab("Relative Abundance") +
+  xlab(NULL)+
+  scale_fill_manual(values = phylum_colors) +
+  theme_linedraw()+
+  theme(axis.text.y = element_text(size = 20, color = "black"),
+        axis.title.y = element_text(size = 18, color = "black"),
+        axis.text.x = element_text(size = 20, angle = 0, vjust = 1, hjust = 0.5, color = "black"),
+        legend.text = element_text(size = 13),
+        legend.position = "right",
+        legend.spacing.x = unit(0.1, 'mm'),
+        legend.spacing.y = unit(0.05, 'mm'),
+        plot.margin=grid::unit(c(0.1,0.1,0.1,0.1), "mm"),
+        strip.text = element_text(size = 18, face = "bold", angle = 0),
+        legend.title = element_text(face="bold", size = 22))+
+  guides(fill=guide_legend(ncol=3,byrow=TRUE))
+
+
+
+#Calculate total abundace for each genus and transform to relative abundance
+
+genus_BRDC_INDV <- brdc_indv_G %>%
+  select(Treatment, Timepoint, animalID, Genus, Abundance) %>% 
+  group_by(Treatment, Timepoint) %>%                   
+  mutate(totalSum = sum(Abundance)) %>%                                
+  ungroup() %>%                                                         
+  group_by(Treatment, Timepoint, Genus) %>%           
+summarise(
+    Abundance = sum(Abundance),
+    Genus = ifelse(Abundance < 0.05, "Genus < 5%", Genus)) %>%        
+  group_by(Treatment, Timepoint, Genus, totalSum) %>% 
+  summarise(                                                            
+    Abundance = sum(Abundance),                                        
+    totalSum,
+    RelAb = Abundance/totalSum) %>%                               
+  unique()
+  
+head(genus_BRDC_INDV)
+
+#View number of genus
+length(unique(genus_BRDC_INDV$Genus))
+max(genus_BRDC_INDV$RelAb)
+mean(genus_BRDC_INDV$RelAb)
+min(genus_BRDC_INDV$RelAb)
+
+
+#Create Color palate for graph
+colFunc <- colorRampPalette(c("darkblue","red2", "purple4", "lightpink", "orange","gray", "olivedrab4", "firebrick","darkcyan", "yellow2", "lightblue", "forestgreen"))
+color_list <- colFunc(length(unique(genus_BRDC_INDV$Genus)))
+genus_colors <- c("gray", color_list)
+length(genus_colors)
+
+  
+BRDC_Abundplot_genus<- ggplot(genus_BRDC_INDV)+
+  geom_col(mapping = aes(x = Treatment, y = RelAb, fill = Genus), position = "stack", show.legend = TRUE)+
+  facet_grid(cols = vars(Timepoint))+
+  ylab("Relative Abundance") +
+  xlab(NULL)+
+  scale_fill_manual(values = colFunc) +
+  theme_linedraw()+
+  theme(axis.text.y = element_text(size = 20, color = "black"),
+        axis.title.y = element_text(size = 18, color = "black"),
+        axis.text.x = element_text(size = 20, angle = 0, vjust = 1, hjust = 0.5, color = "black"),
+        legend.text = element_text(size = 13),
+        legend.position = "right",
+        legend.spacing.x = unit(0.1, 'mm'),
+        legend.spacing.y = unit(0.05, 'mm'),
+        plot.margin=grid::unit(c(0.1,0.1,0.1,0.1), "mm"),
+        strip.text = element_text(size = 18, face = "bold", angle = 0),
+        legend.title = element_text(face="bold", size = 22))+
+  guides(fill=guide_legend(ncol=3,byrow=TRUE))
+
+
+# Make a combined plot of phylum and genus
+combined_plot_RelAbundace_BRDC <- ggarrange(BRDC_Abundplot_phylum, BRDC_Abundplot_genus,
+                                labels = c("A", "B"),
+                                ncol = 2, nrow = 1)
+combined_plot_RelAbundace_BRDC
+
+ggsave("RelAbundace_phylum_genus.png", plot = combined_plot_RelAbundace_BRDCC, width = 1250, height = 750, dpi = "retina", units = "px", scale = 3.2)
+
