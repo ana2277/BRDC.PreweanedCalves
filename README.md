@@ -1,4 +1,6 @@
-Title: Evaluation of nasal microbial communities of beef calves during pre-weaning outbreak of bovine respiratory disease 
+TITLE: Evaluation of nasal microbial communities of beef calves during pre-weaning outbreak of bovine respiratory disease 
+
+REFERENCE: 
 
 BACKGROUND:
 The animal’s commensal bacterial (microbiome) populations have been associated with disease occurrence. Therefore, an understanding of the interaction of the animal’s resident respiratory pathogens in the upper nasal cavity may help us to understand the impact of these pathogens on incidence of respiratory disease in cattle. The overall goal was to characterize bacterial populations associated with pre-weaning calves during two separate outbreaks of bovine respiratory disease complex (BRDC). One group of calves experienced a more severe outbreak of BRDC while the other was considered a moderate outbreak. Nasal swabs from the upper nasal cavity were collected at the time of two outbreaks of BRDC and approximately 30 days post treatment. To evaluate and compare the microbiome, the variable region (approximately 600 bp; variable regions 1-3) of the 16S ribosomal RNA gene was amplified and sequenced with Illumina MiSeq. Additionally, qPCR was completed to measure the abundance of three known BRDC pathogens.
@@ -8,3 +10,4 @@ Overall, bacterial profiles differed between the two groups of calves that exper
 
 CONCLUSION:
 The preweaning bovine respiratory disease outbreak is associated with reduced alpha diversity resulting from dominance of Mycoplasma sp..  Furthermore, beta diversity reflects changes in the dominant genera between the outbreak and a later sampling timepoint.  These differences in nasal microbial communities between the outbreak and the later post-treatment timepoint may reflect the dominance of pathogenic bacteria during the outbreak.  
+
