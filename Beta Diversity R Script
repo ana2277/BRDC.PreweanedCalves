@@ -36,14 +36,14 @@ pcoa_data <- pcoa_coordinates %>%
 
 
 # Create PCoA plot with additional shape mapping
-pcoa_plot <- ggplot(pcoa_data, aes(x = PC1, y = PC2, color = Treatment, shape = Timepoint)) +  # Replace 'Group' and 'Subgroup' with actual metadata column names
+pcoa_plot <- ggplot(pcoa_data, aes(x = PC1, y = PC2, color = Treatment, shape = Timepoint)) +  
   geom_point(size = 3, alpha = 0.8) +
   theme_minimal() +
   labs(title = "PCoA Plot of Bray-Curtis Distance",
        x = paste0("PC1 (", round(pcoa_result$eig[1] / sum(pcoa_result$eig) * 100, 1), "%)"),
        y = paste0("PC2 (", round(pcoa_result$eig[2] / sum(pcoa_result$eig) * 100, 1), "%)"),
-       color = "Outbreak Group",  # Replace 'Group' with the actual metadata column name
-       shape = "Time point") +  # Replace 'Subgroup' with the actual metadata column name
+       color = "Outbreak Group", 
+       shape = "Time point") +  
   theme(
     legend.position = "right",
     axis.line = element_line(color= "black"),
@@ -88,14 +88,14 @@ pcoa_data2 <- pcoa_coordinates2 %>%
 
 
 # Create PCoA plot with additional shape mapping
-pcoa_plot_UnWunfrac <- ggplot(pcoa_data2, aes(x = PC1, y = PC2, color = Treatment, shape = Timepoint)) +  # Replace 'Group' and 'Subgroup' with actual metadata column names
+pcoa_plot_UnWunfrac <- ggplot(pcoa_data2, aes(x = PC1, y = PC2, color = Treatment, shape = Timepoint)) +  
   geom_point(size = 3, alpha = 0.8) +
   theme_minimal() +
   labs(title = "PCoA Plot of Unweighted Unifrac Distance",
        x = paste0("PC1 (", round(pcoa_result2$eig[1] / sum(pcoa_result2$eig) * 100, 1), "%)"),
        y = paste0("PC2 (", round(pcoa_result2$eig[2] / sum(pcoa_result2$eig) * 100, 1), "%)"),
-       color = "Outbreak Group",  # Replace 'Group' with the actual metadata column name
-       shape = "Time point") +  # Replace 'Subgroup' with the actual metadata column name
+       color = "Outbreak Group",  
+       shape = "Time point") + 
   theme(
     legend.position = "right",
     axis.line = element_line(color= "black"),
