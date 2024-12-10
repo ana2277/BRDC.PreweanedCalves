@@ -78,15 +78,15 @@ qiime feature-classifier fit-classifier-naive-bayes \
 #Assign Taxonomy using classifer and plot 
 qiime feature-classifier classify-sklearn --i-classifier gtdb-214-both-classifier.qza --i-reads filtered_INDV-seqs.qza --o-classification INDV_taxonomy.qza
 qiime metadata tabulate --m-input-file INDV_taxonomy.qza --o-visualization INDV_taxonomy.qzv
-qiime taxa barplot --i-table filtered-E23-table.qza --i-taxonomy E23_taxonomy.qza --m-metadata-file Metadata_E23.tsv --o-visualization E23_taxa-bar-plots.qzv
+qiime taxa barplot --i-table iltered-INDV-table.qzaa --i-taxonomy INDV_taxonomy.qza --m-metadata-file Metadata_INDV.tsv --o-visualization INDV_taxa-bar-plots.qzv
 
 
 # Differential Abundance 
 
-qiime composition ancombc --i-table INDV-table.qza --m-metadata-file Metadata_INDV.tsv --p-formula 'FEC' --o-differentials INDV-Treatment.qza
-qiime composition da-barplot --i-data INDV-Treatment.qza --p-significance-threshold 0.01 --p-level-delimiter ';' --o-visualization da-INDV-FEC.qzv
+qiime composition ancombc --i-table INDV-table.qza --m-metadata-file Metadata_INDV.tsv --p-formula 'Treatment' --o-differentials INDV-Treatment.qza
+qiime composition da-barplot --i-data INDV-Treatment.qza --p-significance-threshold 0.01 --p-level-delimiter ';' --o-visualization da-INDV-trt.qzv
 
-qiime composition ancombc --i-table BRDC-table.qza --m-metadata-file Metadata_INDV.tsv --p-formula 'Timepoint' --o-differentials BRDC-Timepoint.qza
+qiime composition ancombc --i-table INDV-table.qza --m-metadata-file Metadata_INDV.tsv --p-formula 'Timepoint' --o-differentials BRDC-Timepoint.qza
 qiime composition da-barplot --i-data BRDC-Timepoint.qza --p-significance-threshold 0.001 --p-level-delimiter ';' --o-visualization BRDC-Timepoint.qzv
 
     
